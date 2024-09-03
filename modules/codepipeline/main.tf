@@ -37,7 +37,7 @@ resource "aws_codepipeline" "codepipeline" {
 
 configuration = {
   ConnectionArn =  aws_codestarconnections_connection.CodeStar_connection.arn # Replace with your connection ARN
-  FullRepositoryId = "theHaziqali/aws-codepipeline-lab-repo"                       # Combines owner and repo
+  FullRepositoryId = "HarisRiaz10/aws-eks-lab-repo"                       # Combines owner and repo
   BranchName = "eks-web-app"                                                                # Replace with your desired branch
 }
     }

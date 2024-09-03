@@ -22,7 +22,7 @@ resource "aws_codebuild_project" "aws-codepipeline-lab-codebuild-project" {
 
   source {
     type            = "GITHUB"
-    location        = "https://github.com/theHaziqali/aws-codepipeline-lab-repo/tree/eks-web-app"
+    location        = "https://github.com/HarisRiaz10/aws-eks-lab-repo/tree/eks-web-app"
     git_clone_depth = 1
       buildspec       = "buildspec.yml"
   }
