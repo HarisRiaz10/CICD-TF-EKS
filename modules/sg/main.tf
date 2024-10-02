@@ -8,6 +8,12 @@ resource "aws_security_group" "my_instance_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from any source IP
   }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic to any destination IP
+  }
   tags = {
     Name = "aws-codepipeline-lab-sg"
   }
