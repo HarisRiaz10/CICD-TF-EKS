@@ -14,10 +14,18 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 }
 
+# Attach the Amazon EKS Cluster Policy to the cluster role
 resource "aws_iam_role_policy_attachment" "eks_cluster_role_policy" {
   role       = aws_iam_role.eks_cluster_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
-output "eks_cluster_role_arn"{
-  value=aws_iam_role.eks_cluster_role.arn
-  }
+
+# Attach the Amazon EC2 Full Access Policy to the cluster role
+resource "aws_iam_role_policy_attachment" "eks_cluster_role_ec2_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess" # Change to a more restrictive policy if needed
+}
+
+output "eks_cluster_role_arn" {
+  value = aws_iam_role.eks_cluster_role.arn
+}
