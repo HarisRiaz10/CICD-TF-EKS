@@ -1,59 +1,44 @@
-module "eks_cluster_role" {
-  source = "../iam_roles/eks-cluster-role"
-}
-module "eks_node_role" {
-  source = "../iam_roles/eks-node-role"
-}
-module "launch_template" {
-    source = "../launch_templates"
-  }
-resource "aws_default_vpc" "default" {
-}
+module "eks" {
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "20.26.0"  # Use the latest version
+  cluster_name    = "my-eks-cluster"
+  cluster_endpoint_public_access = true
 
-resource "aws_default_subnet" "default" {
-availability_zone = "us-east-1a"
-
-  }
-  resource "aws_default_subnet" "default_2" {
-availability_zone = "us-east-1b"
-
-  }
-
-
-
-resource "aws_eks_cluster" "eks_cluster" {
-  name     = "my-eks-cluster"
-  role_arn = module.eks_cluster_role.eks_cluster_role_arn
-
-  vpc_config {
-  subnet_ids      = [resource.aws_default_subnet.default.id,resource.aws_default_subnet.default_2.id]
-  }
-}
-
-resource "aws_eks_node_group" "eks_node_group" {
-  cluster_name    = aws_eks_cluster.eks_cluster.name
-  node_group_name = "my-eks-nodes"
-  node_role_arn   = module.eks_node_role.eks_node_role_arn
-  subnet_ids      = [aws_default_subnet.default.id,aws_default_subnet.default_2.id]
-
-  scaling_config {
-    desired_size = 2
-    max_size     = 3
-    min_size     = 1
-  }
-
-
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster
-  ]
-
- 
-    tags={
-        Name="eks-node-group"
+  cluster_addons = {
+    coredns = {
+      most_recent = true
     }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+  }
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
+  enable_cluster_creator_admin_permissions = true
 
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    ami_type       = "AL2_x86_64"
+    instance_types = ["m5.large"]
+
+    attach_cluster_primary_security_group = true
+  }
+
+  eks_managed_node_groups = {
+    my-node-group = {
+      min_size     = 3
+      max_size     = 5  # Keep the max size low for cost savings
+      desired_size = 3
+
+      instance_types = ["t3.micro"]
+      capacity_type  = "ON_DEMAND"  # Use SPOT instances for further savings
+    }
+  }
+
+  tags = local.tags
 }
-output "eks" {
-  value = aws_eks_cluster.eks_cluster.arn
-}
+
