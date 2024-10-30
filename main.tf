@@ -13,9 +13,6 @@ module "ecr_repo" {
 module "codebuild_project"{
     source= "./modules/codebuild"
 }
-module "codedeploy"{
-    source= "./modules/codedeploy"
-}
 module "codepipeline"{
     source= "./modules/codepipeline"
 }
