@@ -3,7 +3,8 @@ module "eks" {
   version         = "20.26.0"  # Use the latest version
   cluster_name    = "my-eks-cluster"
   cluster_endpoint_public_access = true
-
+  attach_cluster_encryption_policy = false
+  
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -40,5 +41,6 @@ module "eks" {
   }
 
   tags = local.tags
+  depends_on=[module.vpc]
 }
 
